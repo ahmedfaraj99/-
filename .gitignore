@@ -1,0 +1,10 @@
+﻿build/
+.dart_tool/
+.idea/
+*.iml
+android/.gradle/
+ios/Pods/
+.flutter-plugins
+.flutter-plugins-dependencies
+.claude/
+

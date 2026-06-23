@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Health Design System - Live Preview</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #0a0f1e;
+            color: var(--text-primary);
+            font-family: 'Cairo', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .phone-mockup {
+            width: 375px;
+            height: 812px;
+            background: var(--bg-deep);
+            border-radius: var(--radius-phone);
+            box-shadow: 0 0 0 12px #1e293b, 0 60px 120px rgba(0,0,0,0.8);
+            position: relative;
+            overflow: hidden;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            animation: riseIn 0.5s 0.1s var(--spring-curve) both;
+        }
+
+        .balance-card {
+            background: var(--card-gradient);
+            border-radius: 35px;
+            height: 220px;
+            padding: 24px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.4), 0 0 40px rgba(59,130,246,0.1);
+            position: relative;
+            animation: riseIn 0.5s 0.2s var(--spring-curve) both;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .huge-number {
+            font-size: 44px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 40px;
+        }
+
+        .grid-item {
+            aspect-ratio: 0.82;
+            border-radius: var(--radius-grid);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s var(--spring-curve);
+        }
+
+        .grid-item:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .cta-button {
+            width: 100%;
+            height: 60px;
+            background: var(--cta-gradient);
+            border-radius: var(--radius-cta);
+            border: none;
+            color: white;
+            font-family: 'Cairo';
+            font-weight: 800;
+            font-size: 16px;
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(37,99,235,0.3);
+            cursor: pointer;
+            animation: riseIn 0.5s 0.5s var(--spring-curve) both;
+        }
+
+        .shimmer-layer {
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-mockup">
+        <div class="header">
+            <div>
+                <div style="font-size: 12px; color: var(--text-muted);">مرحباً بك 🌿</div>
+                <div style="font-size: 20px; font-weight: 900;">فتحي محمد القزيزي</div>
+            </div>
+            <div style="width: 48px; height: 48px; background: var(--blue); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; box-shadow: 0 8px 20px rgba(59,130,246,0.4);">ف</div>
+        </div>
+
+        <div class="balance-card">
+            <div style="display: flex; justify-content: space-between;">
+                <div style="background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 10px; font-size: 10px;">إجمالي المصروفات</div>
+                <div style="opacity: 0.2;">▥</div>
+            </div>
+            <div class="huge-number">24,726<span style="font-size: 22px; opacity: 0.4;">.89</span> <span style="font-size: 16px; opacity: 0.4;">د.ل</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 10px;">
+                <div style="opacity: 0.4;">يشمل الموظف والتابعين</div>
+                <div style="color: var(--blue); font-weight: bold;">6 تابعين</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="grid-item glow-blue" style="animation-delay: 0.3s;">
+                <div style="font-size: 24px; margin-bottom: 8px; color: var(--blue);">👥</div>
+                أفراد العائلة
+            </div>
+            <div class="grid-item glow-emerald" style="animation-delay: 0.35s;">
+                <div style="font-size: 24px; margin-bottom: 8px; color: var(--emerald);">🏠</div>
+                السقف العلاجي
+            </div>
+            <div class="grid-item glow-teal" style="animation-delay: 0.4s;">
+                <div style="font-size: 24px; margin-bottom: 8px; color: var(--teal);">📄</div>
+                سجل الفواتير
+            </div>
+            <div class="grid-item glow-violet" style="animation-delay: 0.45s;">
+                <div style="font-size: 24px; margin-bottom: 8px; color: var(--violet);">🛡️</div>
+                سقف المؤمن
+            </div>
+            <div class="grid-item glow-rose" style="animation-delay: 0.5s;">
+                <div style="font-size: 24px; margin-bottom: 8px; color: var(--rose);">❤️</div>
+                المزودين
+            </div>
+            <div class="grid-item" style="animation-delay: 0.55s;">
+                <div style="font-size: 24px; margin-bottom: 8px; color: var(--slate);">⚙️</div>
+                خدمات
+            </div>
+        </div>
+
+        <button class="cta-button">
+            <div class="shimmer-layer"></div>
+            فتح تذكرة جديدة 📄
+        </button>
+    </div>
+</body>
+</html>

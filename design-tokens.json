@@ -1,0 +1,167 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$metadata": {
+    "name": "Insured App Design Tokens",
+    "description": "Premium dark theme for بوابة المريض — compatible with Figma Tokens plugin",
+    "version": "1.0.0",
+    "author": "Insured App Team",
+    "theme": "dark",
+    "direction": "rtl",
+    "font": "Cairo"
+  },
+  "color": {
+    "bg": {
+      "primary": { "$value": "#060912", "$type": "color", "$description": "الخلفية الرئيسية للصفحة" },
+      "deep":    { "$value": "#080c18", "$type": "color", "$description": "خلفية غلاف الهاتف" },
+      "body":    { "$value": "#0a0f1e", "$type": "color", "$description": "خلفية محتوى الشاشة" }
+    },
+    "brand": {
+      "blue":       { "$value": "#3b82f6", "$type": "color", "$description": "أزرق — أفراد العائلة" },
+      "blueDark":   { "$value": "#1d4ed8", "$type": "color", "$description": "أزرق داكن — نهاية تدرج CTA" },
+      "cyan":       { "$value": "#22d3ee", "$type": "color", "$description": "سماوي فاتح — accent" },
+      "emerald":    { "$value": "#10b981", "$type": "color", "$description": "أخضر — السقف العلاجي" },
+      "emeraldDark":{ "$value": "#065f46", "$type": "color", "$description": "أخضر داكن — بداية gradient" },
+      "teal":       { "$value": "#14b8a6", "$type": "color", "$description": "تركواز — سجل الفواتير" },
+      "tealDark":   { "$value": "#134e4a", "$type": "color", "$description": "تركواز داكن — بداية gradient" },
+      "violet":     { "$value": "#8b5cf6", "$type": "color", "$description": "بنفسجي — سقف المؤمن" },
+      "violetDark": { "$value": "#4c1d95", "$type": "color", "$description": "بنفسجي داكن — بداية gradient" },
+      "rose":       { "$value": "#f43f5e", "$type": "color", "$description": "وردي — مزودي الخدمة" },
+      "roseDark":   { "$value": "#9f1239", "$type": "color", "$description": "وردي داكن — بداية gradient" },
+      "slate":      { "$value": "#334155", "$type": "color", "$description": "رمادي — خدمات عامة" },
+      "slateDark":  { "$value": "#1e293b", "$type": "color", "$description": "رمادي داكن — بداية gradient" }
+    },
+    "text": {
+      "primary": { "$value": "#f8fafc",              "$type": "color", "$description": "النص الأساسي — أبيض" },
+      "muted":   { "$value": "rgba(255,255,255,0.4)", "$type": "color", "$description": "نص باهت — 40% أبيض" },
+      "subtle":  { "$value": "rgba(255,255,255,0.2)", "$type": "color", "$description": "نص خفيف جداً — 20% أبيض" }
+    },
+    "border": {
+      "primary": { "$value": "rgba(255,255,255,0.08)", "$type": "color", "$description": "حد خفيف" },
+      "bright":  { "$value": "rgba(255,255,255,0.15)", "$type": "color", "$description": "حد مرئي أكثر" }
+    }
+  },
+  "gradient": {
+    "balance": {
+      "$value": "linear-gradient(135deg, #0f2044 0%, #0a1a38 100%)",
+      "$type": "gradient",
+      "$description": "تدرج بطاقة الرصيد"
+    },
+    "cta": {
+      "$value": "linear-gradient(135deg, #1d4ed8 0%, #2563eb 40%, #0ea5e9 100%)",
+      "$type": "gradient",
+      "$description": "تدرج زر فتح التذكرة"
+    },
+    "blue": {
+      "$value": "linear-gradient(145deg, #1d4ed8, #3b82f6)",
+      "$type": "gradient",
+      "$description": "تدرج كارد أفراد العائلة"
+    },
+    "emerald": {
+      "$value": "linear-gradient(145deg, #065f46, #10b981)",
+      "$type": "gradient",
+      "$description": "تدرج كارد السقف العلاجي"
+    },
+    "teal": {
+      "$value": "linear-gradient(145deg, #134e4a, #14b8a6)",
+      "$type": "gradient",
+      "$description": "تدرج كارد سجل الفواتير"
+    },
+    "violet": {
+      "$value": "linear-gradient(145deg, #4c1d95, #8b5cf6)",
+      "$type": "gradient",
+      "$description": "تدرج كارد سقف المؤمن"
+    },
+    "rose": {
+      "$value": "linear-gradient(145deg, #9f1239, #f43f5e)",
+      "$type": "gradient",
+      "$description": "تدرج كارد مزودي الخدمة"
+    },
+    "slate": {
+      "$value": "linear-gradient(145deg, #1e293b, #334155)",
+      "$type": "gradient",
+      "$description": "تدرج كارد الخدمات"
+    }
+  },
+  "shadow": {
+    "blueGlow":   { "$value": "0 8px 28px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.15)",  "$type": "shadow" },
+    "emeraldGlow":{ "$value": "0 8px 28px rgba(16,185,129,0.35), inset 0 1px 0 rgba(255,255,255,0.12)", "$type": "shadow" },
+    "tealGlow":   { "$value": "0 8px 28px rgba(20,184,166,0.35), inset 0 1px 0 rgba(255,255,255,0.12)", "$type": "shadow" },
+    "violetGlow": { "$value": "0 8px 28px rgba(139,92,246,0.35), inset 0 1px 0 rgba(255,255,255,0.12)", "$type": "shadow" },
+    "roseGlow":   { "$value": "0 8px 28px rgba(244,63,94,0.35), inset 0 1px 0 rgba(255,255,255,0.12)",  "$type": "shadow" },
+    "button":     { "$value": "0 8px 32px rgba(37,99,235,0.5), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2)", "$type": "shadow" },
+    "buttonHover":{ "$value": "0 14px 40px rgba(37,99,235,0.6), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2)", "$type": "shadow" },
+    "phone":      { "$value": "0 0 0 1px rgba(255,255,255,0.1), 0 0 0 2px rgba(0,0,0,0.8), 0 60px 120px rgba(0,0,0,0.9), 0 0 80px rgba(59,130,246,0.08)", "$type": "shadow" }
+  },
+  "typography": {
+    "fontFamily": { "$value": "'Cairo', sans-serif", "$type": "fontFamily" },
+    "fontWeight": {
+      "light":     { "$value": 300, "$type": "fontWeight" },
+      "regular":   { "$value": 400, "$type": "fontWeight" },
+      "medium":    { "$value": 500, "$type": "fontWeight" },
+      "semibold":  { "$value": 600, "$type": "fontWeight" },
+      "bold":      { "$value": 700, "$type": "fontWeight" },
+      "extrabold": { "$value": 800, "$type": "fontWeight" },
+      "black":     { "$value": 900, "$type": "fontWeight" }
+    },
+    "fontSize": {
+      "label":    { "$value": "10px", "$type": "fontSize", "$description": "badges, labels" },
+      "small":    { "$value": "11px", "$type": "fontSize", "$description": "small text" },
+      "body":     { "$value": "12px", "$type": "fontSize", "$description": "body text" },
+      "normal":   { "$value": "14px", "$type": "fontSize", "$description": "normal text" },
+      "button":   { "$value": "15px", "$type": "fontSize", "$description": "button text" },
+      "username": { "$value": "17px", "$type": "fontSize", "$description": "username / headings" },
+      "hero":     { "$value": "44px", "$type": "fontSize", "$description": "large numbers" }
+    }
+  },
+  "spacing": {
+    "xs":  { "$value": "4px",  "$type": "spacing" },
+    "sm":  { "$value": "6px",  "$type": "spacing" },
+    "md":  { "$value": "8px",  "$type": "spacing" },
+    "lg":  { "$value": "10px", "$type": "spacing" },
+    "xl":  { "$value": "12px", "$type": "spacing" },
+    "2xl": { "$value": "14px", "$type": "spacing" },
+    "3xl": { "$value": "16px", "$type": "spacing" },
+    "4xl": { "$value": "20px", "$type": "spacing" },
+    "5xl": { "$value": "24px", "$type": "spacing" },
+    "6xl": { "$value": "28px", "$type": "spacing" }
+  },
+  "borderRadius": {
+    "2":     { "$value": "2px",  "$type": "borderRadius" },
+    "6":     { "$value": "6px",  "$type": "borderRadius" },
+    "7":     { "$value": "7px",  "$type": "borderRadius" },
+    "10":    { "$value": "10px", "$type": "borderRadius" },
+    "12":    { "$value": "12px", "$type": "borderRadius" },
+    "13":    { "$value": "13px", "$type": "borderRadius" },
+    "14":    { "$value": "14px", "$type": "borderRadius" },
+    "20":    { "$value": "20px", "$type": "borderRadius", "$description": "CTA button" },
+    "22":    { "$value": "22px", "$type": "borderRadius", "$description": "grid items" },
+    "24":    { "$value": "24px", "$type": "borderRadius" },
+    "28":    { "$value": "28px", "$type": "borderRadius", "$description": "balance card" },
+    "phone": { "$value": "52px", "$type": "borderRadius", "$description": "phone shell" }
+  },
+  "animation": {
+    "easing": {
+      "spring":  { "$value": "cubic-bezier(0.34, 1.56, 0.64, 1)", "$type": "cubicBezier", "$description": "spring bounce — hover/scale effects" },
+      "easeOut": { "$value": "cubic-bezier(0.16, 1, 0.3, 1)",     "$type": "cubicBezier", "$description": "smooth ease out" }
+    },
+    "duration": {
+      "fast":   { "$value": "200ms", "$type": "duration" },
+      "normal": { "$value": "300ms", "$type": "duration" },
+      "slow":   { "$value": "500ms", "$type": "duration" },
+      "shimmer":{ "$value": "3000ms","$type": "duration", "$description": "shimmer sweep loop" }
+    },
+    "delay": {
+      "status":  { "$value": "50ms",  "$type": "duration" },
+      "header":  { "$value": "120ms", "$type": "duration" },
+      "balance": { "$value": "200ms", "$type": "duration" },
+      "section": { "$value": "280ms", "$type": "duration" },
+      "grid1":   { "$value": "360ms", "$type": "duration" },
+      "grid2":   { "$value": "400ms", "$type": "duration" },
+      "grid3":   { "$value": "440ms", "$type": "duration" },
+      "grid4":   { "$value": "480ms", "$type": "duration" },
+      "grid5":   { "$value": "520ms", "$type": "duration" },
+      "grid6":   { "$value": "560ms", "$type": "duration" },
+      "bottom":  { "$value": "420ms", "$type": "duration" }
+    }
+  }
+}

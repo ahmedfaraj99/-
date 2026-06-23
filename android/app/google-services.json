@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "737518721398",
+    "project_id": "tameeni-93f42",
+    "storage_bucket": "tameeni-93f42.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:737518721398:android:bf51f400edb03efc458257",
+        "android_client_info": {
+          "package_name": "com.insurance.insured_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAutCVVDP7xHCKnuy35oGmYuoxtmD2eH40"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
