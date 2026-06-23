@@ -24,31 +24,94 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
   bool     _selectionMode = false;
   final Set<String> _selectedIds = {};
 
+  static const int _perPage = 20;
+  int  _page    = 1;
+  int  _total   = 0;
+  bool _hasMore = false;
+  bool _isLoadingMore = false;
+  final ScrollController _scrollCtrl = ScrollController();
+
   @override
   void initState() {
     super.initState();
+    _scrollCtrl.addListener(_onScroll);
     _loadInvoices();
   }
 
+  @override
+  void dispose() {
+    _scrollCtrl.removeListener(_onScroll);
+    _scrollCtrl.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollCtrl.hasClients) return;
+    final pos = _scrollCtrl.position;
+    if (pos.pixels >= pos.maxScrollExtent - 300 &&
+        _hasMore &&
+        !_isLoadingMore &&
+        !_isLoading) {
+      _loadMore();
+    }
+  }
+
   Future<void> _loadInvoices() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _page = 1;
+    });
     try {
       final result = await ApiService.getInvoices(
         cardNo:   _selectedCardNo,
         fromDate: _fromDate != null ? _fmtDate(_fromDate!) : null,
         toDate:   _toDate   != null ? _fmtDate(_toDate!)   : null,
+        page: 1,
+        perPage: _perPage,
       );
       if (result['success'] == true) {
+        final pg = result['pagination'] as Map<String, dynamic>?;
         setState(() {
           _invoices = List<Map<String, dynamic>>.from(result['invoices'] ?? []);
           if (_familyFilter.isEmpty) {
             _familyFilter = List<Map<String, dynamic>>.from(result['family_filter'] ?? []);
           }
+          _total   = (pg?['total'] as num?)?.toInt() ?? _invoices.length;
+          _hasMore = pg?['has_more'] == true;
           _isLoading = false;
         });
       }
     } catch (_) {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (_isLoadingMore || !_hasMore) return;
+    setState(() => _isLoadingMore = true);
+    try {
+      final next = _page + 1;
+      final result = await ApiService.getInvoices(
+        cardNo:   _selectedCardNo,
+        fromDate: _fromDate != null ? _fmtDate(_fromDate!) : null,
+        toDate:   _toDate   != null ? _fmtDate(_toDate!)   : null,
+        page: next,
+        perPage: _perPage,
+      );
+      if (result['success'] == true) {
+        final pg = result['pagination'] as Map<String, dynamic>?;
+        final more = List<Map<String, dynamic>>.from(result['invoices'] ?? []);
+        setState(() {
+          _invoices.addAll(more);
+          _page    = next;
+          _total   = (pg?['total'] as num?)?.toInt() ?? _total;
+          _hasMore = pg?['has_more'] == true;
+        });
+      }
+    } catch (_) {
+      // silently ignore; user can scroll again to retry
+    } finally {
+      if (mounted) setState(() => _isLoadingMore = false);
     }
   }
 
@@ -415,11 +478,29 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                             backgroundColor: DesignSystem.bgBody,
                             onRefresh: _loadInvoices,
                             child: ListView.builder(
+                              controller: _scrollCtrl,
                               padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
                               physics: const AlwaysScrollableScrollPhysics(
                                   parent: BouncingScrollPhysics()),
-                              itemCount: _invoices.length,
-                              itemBuilder: (_, i) => _invoiceCard(_invoices[i], i),
+                              itemCount: _invoices.length + (_hasMore ? 1 : 0),
+                              itemBuilder: (_, i) {
+                                if (i >= _invoices.length) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    child: Center(
+                                      child: _isLoadingMore
+                                          ? const SizedBox(
+                                              width: 22, height: 22,
+                                              child: CircularProgressIndicator(
+                                                  color: DesignSystem.teal,
+                                                  strokeWidth: 2),
+                                            )
+                                          : const SizedBox(height: 22),
+                                    ),
+                                  );
+                                }
+                                return _invoiceCard(_invoices[i], i);
+                              },
                             ),
                           ),
               ),
@@ -453,7 +534,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
           borderRadius: BorderRadius.circular(DesignSystem.radiusPill),
         ),
         child: Text(
-          '${_invoices.length} فاتورة',
+          '${_total > 0 ? _total : _invoices.length} فاتورة',
           style: DesignSystem.labelStyle.copyWith(
               color: DesignSystem.teal, fontWeight: FontWeight.w700),
         ),

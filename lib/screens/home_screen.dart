@@ -26,6 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int    _totalUnread = 0;
   Timer? _unreadTimer;
 
+  final PageController _announcementsPageCtrl =
+      PageController(viewportFraction: 0.92);
+  int _currentAnnouncement = 0;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _unreadTimer?.cancel();
+    _announcementsPageCtrl.dispose();
     super.dispose();
   }
 
@@ -391,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       _sectionLabel('آخر النشاط'),
                       if (_recentActivity.isNotEmpty)
                         GestureDetector(
-                          onTap: _openNotifications,
+                          onTap: () => _nav(const InvoicesScreen()),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
@@ -650,55 +655,96 @@ class _HomeScreenState extends State<HomeScreen> {
   // ANNOUNCEMENTS
   // ─────────────────────────────────────────
   Widget _buildAnnouncementsBanner() {
+    if (_announcements.length == 1) {
+      return _announcementCard(_announcements.first, fullWidth: true);
+    }
     return Column(
-      children: _announcements.map((a) {
-        final type  = a['type'] as String? ?? 'info';
-        final color = _announcementColor(type);
-        final icon  = _announcementIcon(type);
-        return Container(
-          width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.08),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: color.withOpacity(0.25)),
+      children: [
+        SizedBox(
+          height: 92,
+          child: PageView.builder(
+            controller: _announcementsPageCtrl,
+            itemCount: _announcements.length,
+            onPageChanged: (i) => setState(() => _currentAnnouncement = i),
+            itemBuilder: (_, i) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: _announcementCard(_announcements[i], fullWidth: false),
+            ),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Icon(icon, color: color, size: 18),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(_announcements.length, (i) {
+            final active = i == _currentAnnouncement;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              width: active ? 18 : 6,
+              height: 6,
+              decoration: BoxDecoration(
+                color: active
+                    ? DesignSystem.teal
+                    : DesignSystem.teal.withOpacity(0.25),
+                borderRadius: BorderRadius.circular(3),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      a['title'] as String? ?? '',
-                      style: DesignSystem.bodyTextStyle.copyWith(
-                        color: color,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      a['message'] as String? ?? '',
-                      style: DesignSystem.smallTextStyle.copyWith(
-                        color: DesignSystem.textMuted,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget _announcementCard(Map<String, dynamic> a, {required bool fullWidth}) {
+    final type  = a['type'] as String? ?? 'info';
+    final color = _announcementColor(type);
+    final icon  = _announcementIcon(type);
+    return Container(
+      width: double.infinity,
+      margin: fullWidth ? const EdgeInsets.only(bottom: 8) : EdgeInsets.zero,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withOpacity(0.25)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  a['title'] as String? ?? '',
+                  style: DesignSystem.bodyTextStyle.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+                const SizedBox(height: 3),
+                Text(
+                  a['message'] as String? ?? '',
+                  style: DesignSystem.smallTextStyle.copyWith(
+                    color: DesignSystem.textMuted,
+                    height: 1.5,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
-        );
-      }).toList(),
+        ],
+      ),
     );
   }
 

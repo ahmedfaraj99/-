@@ -120,8 +120,13 @@ class ApiService {
     int? cardNo,
     String? fromDate,
     String? toDate,
+    int page = 1,
+    int perPage = 20,
   }) async {
-    final params = <String, String>{};
+    final params = <String, String>{
+      'page': page.toString(),
+      'per_page': perPage.toString(),
+    };
     if (cardNo != null) params['card_no'] = cardNo.toString();
     if (fromDate != null) params['from_date'] = fromDate;
     if (toDate != null) params['to_date'] = toDate;
