@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'auth_service.dart';
 
@@ -9,11 +11,25 @@ Map<String, dynamic> _parseJson(String body) =>
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+class UnauthorizedException implements Exception {
+  final String message;
+  UnauthorizedException([this.message = 'انتهت الجلسة، الرجاء تسجيل الدخول مجدداً']);
+  @override
+  String toString() => message;
+}
+
 class ApiService {
   static const String baseUrl = 'http://172.20.10.4:8000/api/insured';
 
   // Max time to wait for any request
   static const _timeout = Duration(seconds: 15);
+
+  /// Set from main.dart so the global 401 handler can navigate / snack.
+  static GlobalKey<NavigatorState>? navigatorKey;
+  static GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
+
+  // Guard so concurrent 401s don't push /login multiple times.
+  static bool _handlingUnauthorized = false;
 
   static Future<Map<String, String>> _headers() async {
     final token = await AuthService.getToken();
@@ -26,14 +42,47 @@ class ApiService {
 
   /// Throws if the HTTP response status is not 200.
   static void _checkStatus(http.Response response) {
+    if (response.statusCode == 401) {
+      _handleUnauthorized();
+      throw UnauthorizedException();
+    }
     if (response.statusCode != 200) {
       throw Exception('HTTP ${response.statusCode}: ${response.body}');
     }
   }
 
-  /// Runs [jsonDecode] in a background isolate so the UI thread stays free.
-  static Future<Map<String, dynamic>> _decode(String body) =>
-      compute(_parseJson, body);
+  static void _handleUnauthorized() {
+    if (_handlingUnauthorized) return;
+    _handlingUnauthorized = true;
+    // Fire-and-forget: clear creds, route to login, show a snack.
+    () async {
+      try {
+        await AuthService.clearAll();
+      } catch (_) {}
+      final nav = navigatorKey?.currentState;
+      if (nav != null) {
+        nav.pushNamedAndRemoveUntil('/login', (_) => false);
+      }
+      scaffoldMessengerKey?.currentState
+        ?..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(
+          content: Text('انتهت الجلسة، الرجاء تسجيل الدخول مجدداً'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ));
+      _handlingUnauthorized = false;
+    }();
+  }
+
+  /// Detects 401 (triggers global logout + throws UnauthorizedException),
+  /// then runs [jsonDecode] off the UI thread.
+  static Future<Map<String, dynamic>> _decode(http.Response response) {
+    if (response.statusCode == 401) {
+      _handleUnauthorized();
+      throw UnauthorizedException();
+    }
+    return compute(_parseJson, response.body);
+  }
 
   // ==================== AUTH ====================
 
@@ -49,7 +98,7 @@ class ApiService {
           body: jsonEncode({'emp_no': empNo, 'password': password}),
         )
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> setupProfile(
@@ -61,7 +110,7 @@ class ApiService {
           body: jsonEncode({'email': email, 'new_pin': newPin}),
         )
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> resetPin(
@@ -76,7 +125,7 @@ class ApiService {
           body: jsonEncode({'emp_no': empNo, 'email': email}),
         )
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> changePin(
@@ -88,21 +137,21 @@ class ApiService {
           body: jsonEncode({'current_pin': currentPin, 'new_pin': newPin}),
         )
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> getProfile() async {
     final response = await http
         .get(Uri.parse('$baseUrl/profile'), headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> logout() async {
     final response = await http
         .post(Uri.parse('$baseUrl/logout'), headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   // ==================== COVERAGE ====================
@@ -111,7 +160,7 @@ class ApiService {
     final response = await http
         .get(Uri.parse('$baseUrl/coverage-rules'), headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   // ==================== INVOICES ====================
@@ -135,7 +184,7 @@ class ApiService {
     final response = await http
         .get(uri, headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   // ==================== INSURED CEILING ====================
@@ -149,7 +198,7 @@ class ApiService {
     final response = await http
         .get(uri, headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   // ==================== SUPPORT TICKETS ====================
@@ -158,7 +207,7 @@ class ApiService {
     final response = await http
         .get(Uri.parse('$baseUrl/ticket-categories'), headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> createTicket(
@@ -170,14 +219,14 @@ class ApiService {
           body: jsonEncode(data),
         )
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> getMyTickets() async {
     final response = await http
         .get(Uri.parse('$baseUrl/my-tickets'), headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   // ==================== PROVIDERS ====================
@@ -188,7 +237,7 @@ class ApiService {
     final response = await http
         .get(uri, headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   // ==================== NOTIFICATIONS ====================
@@ -198,7 +247,7 @@ class ApiService {
         .get(Uri.parse('$baseUrl/unread-count'), headers: await _headers())
         .timeout(_timeout);
     _checkStatus(response);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> getNotifications() async {
@@ -206,21 +255,21 @@ class ApiService {
         .get(Uri.parse('$baseUrl/notifications'), headers: await _headers())
         .timeout(_timeout);
     _checkStatus(response);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> markTicketsRead() async {
     final response = await http
         .post(Uri.parse('$baseUrl/mark-tickets-read'), headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> markInvoicesRead() async {
     final response = await http
         .post(Uri.parse('$baseUrl/mark-invoices-read'), headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   // ==================== ANNOUNCEMENTS ====================
@@ -230,7 +279,7 @@ class ApiService {
         .get(Uri.parse('$baseUrl/announcements'), headers: await _headers())
         .timeout(_timeout);
     _checkStatus(response);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   // ==================== LIVE CHAT ====================
@@ -239,7 +288,7 @@ class ApiService {
     final response = await http
         .get(Uri.parse('$baseUrl/chat/session'), headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> chatPoll(
@@ -251,7 +300,7 @@ class ApiService {
     final response = await http
         .get(uri, headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> chatSendMessage(
@@ -263,7 +312,7 @@ class ApiService {
           body: jsonEncode({'session_id': sessionId, 'message': message}),
         )
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> chatUploadFile(
@@ -279,8 +328,8 @@ class ApiService {
     req.files.add(
         await http.MultipartFile.fromPath('file', filePath, filename: fileName));
     final streamed = await req.send().timeout(_timeout);
-    final body = await streamed.stream.bytesToString();
-    return _decode(body);
+    final response = await http.Response.fromStream(streamed);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> chatCloseSession(int sessionId) async {
@@ -291,7 +340,7 @@ class ApiService {
           body: jsonEncode({'session_id': sessionId}),
         )
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   /// يُستدعى أثناء الانتظار في الطابور - يُرجع position, est_name, est_wait_seconds, status
@@ -301,7 +350,7 @@ class ApiService {
     final response = await http
         .get(uri, headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   /// إرسال تقييم المحادثة الفورية بعد إغلاقها
@@ -318,7 +367,7 @@ class ApiService {
           }),
         )
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   // ==================== PROVIDER RATINGS ====================
@@ -329,7 +378,7 @@ class ApiService {
         .get(Uri.parse('$baseUrl/providers/pending-ratings'),
             headers: await _headers())
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   /// إرسال تقييم مزود خدمة
@@ -351,7 +400,7 @@ class ApiService {
           }),
         )
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   // ==================== PUSH NOTIFICATIONS ====================
@@ -365,7 +414,7 @@ class ApiService {
           body: jsonEncode({'token': fcmToken, 'platform': platform}),
         )
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 
   static Future<Map<String, dynamic>> removeFcmToken(String deviceId) async {
@@ -376,6 +425,6 @@ class ApiService {
           body: jsonEncode({'device_id': deviceId}),
         )
         .timeout(_timeout);
-    return _decode(response.body);
+    return _decode(response);
   }
 }

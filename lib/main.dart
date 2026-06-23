@@ -46,11 +46,21 @@ void main() async {
 class InsuredApp extends StatelessWidget {
   final bool hasSession;
 
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+
   const InsuredApp({super.key, required this.hasSession});
 
   @override
   Widget build(BuildContext context) {
+    // Wire global keys so ApiService can react to 401s.
+    ApiService.navigatorKey = navigatorKey;
+    ApiService.scaffoldMessengerKey = scaffoldMessengerKey;
     return MaterialApp(
+      navigatorKey: navigatorKey,
+      scaffoldMessengerKey: scaffoldMessengerKey,
       title: 'بوابة المريض',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -98,6 +108,10 @@ class InsuredApp extends StatelessWidget {
         ),
       ),
       home: hasSession ? const HomeScreen() : const LoginScreen(),
+      routes: {
+        '/login': (_) => const LoginScreen(),
+        '/home':  (_) => const HomeScreen(),
+      },
     );
   }
 }
